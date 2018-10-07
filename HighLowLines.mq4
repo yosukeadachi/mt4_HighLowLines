@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2018, Yosuke Adachi"
 #property link      ""
-#property version   "1.00"
+#property version   "1.01"
 #property strict
 #property indicator_chart_window
 #property indicator_buffers 8
@@ -118,8 +118,11 @@ string GenerateLabelObjName(int aDayIndex, string aName) {
 // 作成
 // ラベル関連を作成
 void CreateLabel(string aName, color aColor){
-  int pixcel_x,pixcel_y;
-  ChartTimePriceToXY( 0,0, Time[0], 0, pixcel_x,pixcel_y);
+  int pixcel_x = 0;
+  int pixcel_y = 0;
+  if(ArraySize(Time) > 0) {
+    ChartTimePriceToXY( 0,0, Time[0], 0, pixcel_x,pixcel_y);
+  }
   pixcel_x = 0;
   // テキストラベルオブジェクト生成
   string _labelObjName = aName;
@@ -147,8 +150,11 @@ void CreateLabelAll(StructBufferInfo &aBuffers[]){
 // 更新
 // ラベル関連を更新
 void UpdateLabel(string aName, double aValue) {
-  int pixcel_x,pixcel_y;
-  ChartTimePriceToXY( 0,0, Time[0],aValue, pixcel_x,pixcel_y);
+  int pixcel_x = 0;
+  int pixcel_y = 0;
+  if(ArraySize(Time) > 0) {
+    ChartTimePriceToXY( 0,0, Time[0],aValue, pixcel_x,pixcel_y);
+  }
   pixcel_x = 0;
   string _labelObjName = aName;
   ObjectSet(_labelObjName,OBJPROP_XDISTANCE,pixcel_x);    // テキストラベルオブジェクトX軸位置設定
@@ -163,11 +169,11 @@ void UpdateLabelHighLow(StructBufferInfo &aBuffer) {
   double _low = iLow(NULL,aBuffer.timeframe,aBuffer.dayIndex);
   // printf("%d low:%f", day, _low);
   for(int bar = 0; bar < Bars; bar++) {
-    if(ArraySize(aBuffer.high) > 0) {
+    if(ArraySize(aBuffer.high) > bar) {
       aBuffer.high[bar] = _high;
       UpdateLabel(aBuffer.nameHigh, aBuffer.high[0]);
     }
-    if(ArraySize(aBuffer.low) > 0) {
+    if(ArraySize(aBuffer.low) > bar) {
       aBuffer.low[bar] = _low;
       UpdateLabel(aBuffer.nameLow, aBuffer.low[0]);
     }
